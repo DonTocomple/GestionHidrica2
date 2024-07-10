@@ -1,0 +1,4 @@
+.container {
+    min-height: calc(100vh - 56px); /* Ajusta el valor según la altura de tu navbar y footer */
+  }
+  
