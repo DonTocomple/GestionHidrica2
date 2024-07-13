@@ -1,17 +1,16 @@
 import { Component } from '@angular/core';
-import { DashboardComponent } from '../dashboard/dashboard.component';
-import { ActivatedRoute } from '@angular/router';
+import {  Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { EmpresaListComponent } from '../empresa-list/empresa-list.component';
 
 @Component({
   selector: 'app-empresa-detail-admin',
   standalone: true,
-  imports: [DashboardComponent],
+  imports: [CommonModule, EmpresaListComponent],
   templateUrl: './empresa-detail-admin.component.html',
   styleUrl: './empresa-detail-admin.component.css'
 })
 export class EmpresaDetailAdminComponent {
-  empresa: string = '';
-
   empresas = [
     'Agrícola los Pellines',
     'Agricola Jorge Borgeaud',
@@ -25,19 +24,11 @@ export class EmpresaDetailAdminComponent {
     'Agrícola David Estrada'
   ];
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(public router: Router) {}
 
-  ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id !== null) {
-      const index = +id;
-      if (index >= 0 && index < this.empresas.length) {
-        this.empresa = this.empresas[index];
-      } else {
-        console.error('ID fuera de rango');
-      }
-    } else {
-      console.error('ID es null');
-    }
+  navigateToDetail(empresa: string) {
+    const id = this.empresas.indexOf(empresa);
+    this.router.navigate(['/empresa', id]);
   }
+  
 }

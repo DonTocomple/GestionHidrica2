@@ -1,16 +1,22 @@
-import { Component, Input } from '@angular/core';
+import { Component, HostListener, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink, RouterModule } from '@angular/router';
+
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,RouterLink,RouterModule],
   templateUrl: "./navbar.component.html",
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent {
 
   notificationsEnabled = true;
+  changeLanguage =[
+    {id:1, texto:'Español'},
+    {id:2, texto:'Ingles'}
+  ]
 
   notificaciones = [
     { id: 1, texto: 'notificacion 1' },
@@ -30,12 +36,19 @@ export class NavbarComponent {
   toggleNotifications() {
     this.notificationsEnabled = !this.notificationsEnabled;
   }
+  toggleLanguage() {
+  }
 
   isOpen = false;
   isOpenConf = false;
 
   openNot() {
-    this.isOpen = true;
+    this.isOpen = !this.isOpen;
+    if (this.isOpen) {
+      addEventListener("click", this.closeModal);
+    } else {
+      removeEventListener("click", this.closeModal);
+    }
     this.isOpenConf = false;
   }
 
@@ -44,7 +57,12 @@ export class NavbarComponent {
   }
 
   openConf() {
-    this.isOpenConf = true;
+    this.isOpenConf = !this.isOpenConf; // Alterna el valor de isOpen
+    if (this.isOpenConf) {
+      addEventListener("click", this.closeModalConf);
+    } else {
+      removeEventListener("click", this.closeModalConf);
+    }
     this.isOpen = false;
   }
   closeModalConf() {

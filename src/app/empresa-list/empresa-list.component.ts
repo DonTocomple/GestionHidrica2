@@ -23,7 +23,7 @@ export class EmpresaListComponent {
     'Agrícola David Estrada'
   ];
 
-  constructor(private router: Router) {}
+  constructor(public router: Router) {}
 
   navigateToDetail(empresa: string) {
     const id = this.empresas.indexOf(empresa);
