@@ -27,3 +27,11 @@ canvas {
     height: 300px; /* Ajusta la altura en pantallas pequeñas */
   }
 }
+canvas {
+  display: block;
+}
+
+canvas.hidden {
+  display: none;
+}
+
