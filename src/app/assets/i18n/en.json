@@ -1,0 +1,10 @@
+{
+    "HUMIDITY": "Humidity",
+    "VOLUME": "Volume",
+    "TEMPERATURE": "Temperature",
+    "Q": "Q",
+    "TIME": "Time",
+    "LAST_VALUES": "Last Values",
+    "PULSE": "Pulse"
+  }
+  
