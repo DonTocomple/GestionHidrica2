@@ -1,6 +1,8 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Chart, registerables } from 'chart.js';
+import { EmpresaService } from '../empresa-detail-admin/empresa-service.service';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-dashboard',
@@ -9,29 +11,55 @@ import { Chart, registerables } from 'chart.js';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements AfterViewInit {
+export class DashboardComponent implements AfterViewInit, OnDestroy {
   cards = [
-    { id: 'barChart1', title: 'Humedad' },
-    { id: 'barChart2', title: 'Volumen' },
-    { id: 'lineChart1', title: 'Temperatura' },
-    { id: 'lineChart2', title: 'Q' },
-    { id: 'barChart3', title: 'Tiempo' },
-    { id: 'randomValues', title: 'Últimos Valores' }
+    { id: 'barChart1', title: 'Humedad', isSelected: true },
+    { id: 'barChart2', title: 'Volumen', isSelected: true },
+    { id: 'lineChart1', title: 'Temperatura', isSelected: true },
+    { id: 'lineChart2', title: 'Q', isSelected: true },
+    { id: 'barChart3', title: 'Tiempo', isSelected: true },
+    { id: 'randomValues', title: 'Últimos Valores', isSelected: true }
   ];
 
   randomValues: { label: string, value: number }[] = [];
+  private intervalId: any;
 
-  constructor() {
+  constructor(
+    private empresaService: EmpresaService,
+    private cdRef: ChangeDetectorRef
+  ) {
     Chart.register(...registerables);
+    this.loadSelectedCharts();
   }
 
   ngAfterViewInit() {
-    this.createBarChart1();
-    this.createBarChart2();
-    this.createLineChart1();
-    this.createLineChart2();
-    this.createBarChart3();
+    if (this.cards[0].isSelected) this.createBarChart1();
+    if (this.cards[1].isSelected) this.createBarChart2();
+    if (this.cards[2].isSelected) this.createLineChart1();
+    if (this.cards[3].isSelected) this.createLineChart2();
+    if (this.cards[4].isSelected) this.createBarChart3();
     this.generateRandomValues();
+
+    this.intervalId = setInterval(() => {
+      this.generateRandomValues();
+      this.cdRef.detectChanges(); // Detecta cambios en la vista
+    }, 1000); // Actualiza cada segundo
+  }
+
+  ngOnDestroy() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+  }
+
+  loadSelectedCharts() {
+    const savedData = this.empresaService.getEmpresaGraficos();
+    this.cards.forEach(card => {
+      const selectedChart = savedData['Agrícola los Pellines']?.find(grafico => grafico.texto === card.title);
+      if (selectedChart) {
+        card.isSelected = selectedChart.isSelected;
+      }
+    });
   }
 
   createBarChart1() {
@@ -170,17 +198,23 @@ export class DashboardComponent implements AfterViewInit {
     const temperature = this.getRandomNumber(5.5, 14);
     const q = this.getRandomNumber(0, 3);
     const time = this.getRandomNumber(0.2, 1);
+    const realTime = this.returnNumberLive(5, 1000);
 
     this.randomValues = [
       { label: 'Humedad', value: humidity },
       { label: 'Volumen', value: volume },
       { label: 'Temperatura', value: temperature },
       { label: 'Q', value: q },
-      { label: 'Tiempo', value: time }
+      { label: 'Tiempo', value: time },
+      { label: 'Random', value: realTime }
     ];
   }
 
   getRandomNumber(min: number, max: number): number {
+    return Math.random() * (max - min) + min;
+  }
+
+  returnNumberLive(min: number, max: number): number {
     return Math.random() * (max - min) + min;
   }
 }
